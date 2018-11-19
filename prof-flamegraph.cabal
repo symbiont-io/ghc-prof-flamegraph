@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                prof-flamegraph
-version:             0
+version:             1.0.0
 synopsis:            Generate flamegraphs from ghc RTS .prof files
 license:             MIT
 license-file:        LICENSE
