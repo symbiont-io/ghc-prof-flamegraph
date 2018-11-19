@@ -11,7 +11,7 @@ install:
 script:
   - gzip -cd test.prof.gz |
       cabal new-run -v0 prof-flamegraph |
-      sort > test.trace &&
+      LC_ALL=C sort > test.trace &&
     diff test.trace.golden test.trace
 
 before_cache:
