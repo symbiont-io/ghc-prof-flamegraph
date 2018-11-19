@@ -1,34 +1,16 @@
-# ghc-prof-flamegraph
+Visualise Haskell application `.prof` data as a [flamegraph](http://www.brendangregg.com/flamegraphs.html).
 
-[![Build Status](https://travis-ci.org/fpco/ghc-prof-flamegraph.svg)](https://travis-ci.org/fpco/ghc-prof-flamegraph)
+For example
 
-This is a small tool to convert GHC time profiling reports into a format
-understandable by the
-[FlameGraph](https://github.com/brendangregg/FlameGraph) tool.
+![demo](demo.png)
 
-## Install
+To install, use the `cabal-install` tool (get it from [`ghcup`](https://github.com/haskell/ghcup) or your operating system's package manager) and type
 
-    cabal install
+```
+cabal new-update
+cabal new-install prof-flamegraph
+```
 
-## Usage
+There is no need to clone this repository.
 
-First convert a `.prof` file into the flame graph svg:
-
-    $ cat ~/src/packdeps/packdeps.prof | ghc-prof-flamegraph > packdeps.prof.svg
-
-Or, alternatively, just pass the `.prof` file as an argument. The tool will
-then create corresponing `.svg` file:
-
-    $ ghc-prof-flamegraph ~/src/packdeps/packdeps.prof
-    Output written to ~/src/packdeps/packdeps.svg
-
-The previous command will produce `~/src/packdeps/packdeps.svg` file.
-
-You can customize the behavior of the underlying `flamegraph.pl` by passing
-options via `–framegraph-option`. For example, you can customize the title:
-
-    $ ghc-prof-flamegraph ~/src/packdeps/packdeps.prof '--flamegraph-option=--title=Package dependencies'
-    Output written to ~/src/packdeps/packdeps.svg
-
-You can also generate a flamegraph using the allocation measurements,
-using the `--alloc` flag.
+Further documentation in `prof-flamegraph.cabal` or with the `--help`.

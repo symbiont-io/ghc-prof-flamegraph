@@ -1,7 +1,16 @@
-# stack
-.stack-work
+# ghc / cabal
+.ghc.environment.*
+dist/
+dist-newstyle/
 
-# cabal
-dist-newstyle
-.ghc.*
-cabal.project.local
+# RTS
+*.eventlog
+*.hp
+*.prof
+*.trace
+
+# app
+app.trace.test
+*.svg
+*.png
+*.json

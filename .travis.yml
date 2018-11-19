@@ -1,32 +1,41 @@
-# Travis script based on https://github.com/hvr/multi-ghc-travis
-
-env:
-  - CABALVER=1.18 GHCVER=7.8.4
-  - CABALVER=1.22 GHCVER=7.10.1
-
-before_install:
-  - travis_retry sudo add-apt-repository -y ppa:hvr/ghc
-  - travis_retry sudo apt-get update
-  - travis_retry sudo apt-get install cabal-install-$CABALVER ghc-$GHCVER
-  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+language: haskell
+ghc:
+  - 8.4.4
+  - 8.6.2
+cabal: 2.4
 
 install:
-  - cabal --version
-  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
-  - travis_retry cabal update
-  - cabal install --only-dependencies --enable-tests --enable-benchmarks
+  - export PATH=$HOME/.cabal/bin:$PATH &&
+    cabal new-update
 
 script:
-  - cabal configure -flib-Werror -v2 --enable-tests --enable-benchmarks
-  - cabal build
-  - cabal check
-  - cabal sdist
-  # check that the generated source-distribution can be built & installed
-  - export SRC_TGZ=$(cabal info . | awk '{print $2 ".tar.gz";exit}') ;
-    cd dist/;
-    if [ -f "$SRC_TGZ" ]; then
-       cabal install --force-reinstalls "$SRC_TGZ";
-    else
-       echo "expected '$SRC_TGZ' not found";
-       exit 1;
-    fi
+  - gzip -cd test.prof.gz |
+      cabal new-run -v0 prof-flamegraph |
+      sort > test.trace &&
+    diff test.trace.golden test.trace
+
+before_cache:
+  - rm -rf $HOME/.cabal/logs
+
+cache:
+  apt: true
+  directories:
+  - "$HOME/.ghcup"
+  - "$HOME/.cabal"
+
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
+
+deploy:
+  provider: hackage
+  username: fommil
+  password:
+    secure: JtvjAkHPBCRvty6VtLIkLHPqTO+VQr0iLgzrFn0f/RDvoWMvblVfihrFJoJnyeS567Dlsft4k8uQfsiy+XIhLOiXgV+LRBygfcXEUT0KaEQrhEwqrSVxPwrCnVCyRdNEsrBIiF1XG24nOYlHEsWtBIqW9g1wgMpt0FA2vVy4rGKXVA2qdS31vowRgbJyEQoeeDYRqI1hZ18AWJBH9M7Cy06Se4uH0ts9aZj5Pk2mGYVOZigH19uQTiNUK2TqPVGoo+B1lIkJnsBbTCcXFB/HFqPRRn6aunjM89MwWojSM4hx4E4+jTtyZQhjQ1R7RIvEKBjQg/a9mWhCOwIkfTSTCNmijDqeWSO+2R9cFx78/3WOAFcffbghYs3cNKJM61Hspvv/sJwuJ/0afgAbsDBDPmf1R+sOAz1BDwis2knZH6WTtQ5Wjoxt0eKrwvLH3fa90Oi0wY1VBuRX3EoETwUwW1XtHDzVn/Y2MmTy99T+Hhtdd82iVrIJ9N6IwAPq+K+z3qH3ErlSpbgfCve2SmWv6o98XqLYjLtM5xgFzrFx2zR/FpgNw7ulGdvzT9aDMq6XDVCPUdhLUJ9Gwo9MdDmsObIeNKURSRpgc5wXdYY5kuAyOUYK/1x6tdDR83nNUMyYpCwBfRkCte4M92yCXhQcfPPc7q6KeLJ/57GLErORwVI=
+  on:
+    tags: true
+    repo: symbiont-io/prof-flamegraph
+    condition: $TRAVIS_HASKELL_VERSION = 8.4.4
