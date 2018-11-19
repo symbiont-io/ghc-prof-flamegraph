@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/symbiont-io/prof-flamegraph.svg?branch=master)](https://travis-ci.org/symbiont-io/prof-flamegraph)
+
 Visualise Haskell application `.prof` data as a [flamegraph](http://www.brendangregg.com/flamegraphs.html).
 
 For example
